@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>[1] : Loading and preprocessing the data</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<hr/>
+
+<p>&mdash; Load libraries
+library(knitr)
+opts_chunk$set(tidy = TRUE)</p>
+
+<h1>[1] : Loading and preprocessing the data</h1>
+
+<p>&mdash; We will load the CSV File, assume that you have setwd to <br>
+   &mdash; your local path where this CSV file is located.  <br></p>
+
+<p>setwd(&ldquo;C:/dscience&rdquo;)
+   activity &lt;- read.csv(&ldquo;activity.csv&rdquo;)</p>
+
+<p>&mdash;   we will pre-process this file as follows: <br>
+&mdash;   1 : Convert date column to the POSIX date format.: YYYY-MM-DD <br>
+&mdash;   2 : Convert the integer column to a new POSIX time column in HH:MM:SS <br></p>
+
+<p>&mdash; convert character date to POSIX date <br></p>
+
+<p>activity$date &lt;- as.POSIXct(strptime(activity$date, &ldquo;%Y-%m-%d&rdquo;), tz = &ldquo;&rdquo;)</p>
+
+<p>&mdash; first convert integer time to character and pad with leading zeros&hellip;</p>
+
+<p>activity$time &lt;- sprintf(&ldquo;%04d&rdquo;, activity$interval)  </p>
+
+<p>&mdash; &hellip;then convert to the date type</p>
+
+<p>activity$time &lt;- as.POSIXct(activity$time, &ldquo;%H%M&rdquo;, tz = &ldquo;&rdquo;)</p>
+
+<p>&mdash; Let&#39;s display some of the data and the structure of the data frame <br>
+&mdash; after pre-processing. <br></p>
+
+<p>str(activity) <br>
+&mdash; &#39;data.frame&#39;:    17568 obs. of  4 variables: <br></p>
+
+<p>&mdash;  $ steps   : int  NA NA NA NA NA NA NA NA NA NA &hellip;<br>
+&mdash;  $ date    : POSIXct, format: &ldquo;2012-10-01&rdquo; &ldquo;2012-10-01&rdquo; &hellip;<br>
+&mdash;  $ interval: int  0 5 10 15 20 25 30 35 40 45 &hellip;<br>
+&mdash;  $ time    : POSIXct, format: &ldquo;2014-11-22 00:00:00&rdquo; &ldquo;2014-11-22 00:05:00&rdquo; &hellip;<br>
+<br>
+<br></p>
+
+<h1>[2] : What is mean total number of steps taken per day? <br></h1>
+
+<p>&mdash; To answer this question, we will use aggregate() function , create a new <br>
+&mdash; data frame with 2 columns : Date and Total Steps on each date: <br>
+<br>
+<br></p>
+
+<p>total_steps_by_date &lt;- aggregate(x=list(total_steps=activity$steps), by=list(date=activity$date), FUN=mean, na.rm=TRUE)</p>
+
+<p>&mdash; The histograms can be produced now to show the distribution of total steps: <br>
+&mdash; In order to avoid waring of Hebrew characters occurs, use windows() <br>
+&mdash; function to set width and height in advance <br></p>
+
+<p>options(device = function(file, width = 7, height = 7, &hellip;) {
+    windows(width = width, height = height, &hellip;)
+})</p>
+
+<p>par(mfrow = c(1, 2))  # 1 row, 2 columns <br>
+ &mdash; frequencies   <br><br>
+hist(total_steps_by_date$total_steps, breaks = 30, xlab = &ldquo;Total Steps&rdquo;, main = &ldquo;Total Steps Per Day&rdquo;, col = &ldquo;lightblue&rdquo;) <br></p>
+
+<p>&mdash;  desnsity <br></p>
+
+<p>plot(density(total_steps_by_date$total_steps, na.rm = TRUE), xlab = &ldquo;Total Steps&rdquo;, ylab = &ldquo;Density&rdquo;, main = &ldquo;Total Steps Per Day&rdquo;, col = &ldquo;purple&rdquo;, lwd = 3) <br>
+<br></p>
+
+<p>par(mfrow = c(1, 1))  <br>
+&mdash; Finally, we&#39;ll calculate the mean and median number of steps per day.  <br></p>
+
+<p>mean(total_steps_by_date$total_steps) <br>
+&mdash; [1] 9354.23</p>
+
+<p>median(total_steps_by_date$total_steps, na.rm = T) <br>
+&mdash; [1] 10395</p>
+
+<h1>[3] : What is the average daily activity pattern?  <br></h1>
+
+<p><br></p>
+
+<p>&mdash; First we&#39;ll use the aggregate() function to obtain the average number <br>
+&mdash; of steps for each time interval. With the result, we can draw a time  <br>
+&mdash; series plot showing time interval on the x-axis and mean number of <br>
+&mdash; steps for the time interval on the y-axis. <br>
+<br></p>
+
+<p>average_steps_by_time &lt;- aggregate(list(average_steps = activity$steps), by = list(time = activity$time,  interval = activity$interval), FUN = mean, na.rm = TRUE) <br>
+plot(average_steps ~ time, data = average_steps_by_time, xlab = &ldquo;Time interval&rdquo;,     ylab = &ldquo;Mean steps&rdquo;, main = &ldquo;Mean Steps By Time Interval&rdquo;, type = &ldquo;l&rdquo;,
+     col = &ldquo;blue&rdquo;, lwd = 2)  <br>
+<br>
+&mdash; Next, we determine the time interval with the maximum average number <br>
+&mdash; of steps. <br>
+<br>
+average_steps_by_time[which.max(average_steps_by_time$average_steps), ]  <br></p>
+
+<p>&mdash; time interval average_steps  <br>
+&mdash; 104 2014-11-22 08:35:00      835      206.1698  <br>
+<br>
+<br></p>
+
+<h1>[4] : Imputing missing values  <br></h1>
+
+<p>&mdash; First get the count of total missing values in STEPS column:  <br></p>
+
+<p>sum(is.na(activity[, &ldquo;steps&rdquo;]))   <br>
+&mdash; [1] 2304    <br></p>
+
+<p>&mdash; For the missing values we will use average number of steps for   <br>
+&mdash; time interval as we did above.    <br>
+&mdash; we&#39;ll merge the original data frame with the data frame containing  <br>
+&mdash; average steps by interval to form a third, new data frame. We&#39;ll   <br>
+&mdash; impute values for the NA&#39;s in the new data frame.  <br></p>
+
+<p>&mdash; &#39;join&#39; the two data frames using merge()  <br>
+activity_imputed &lt;- merge(activity, average_steps_by_time, by = &ldquo;interval&rdquo;)  <br>
+&mdash;  correct the NA steps with average steps for the interval  <br></p>
+
+<p>activity_imputed &lt;- within(activity_imputed, steps &lt;- ifelse(is.na(activity_imputed$steps), activity_imputed$average_steps, activity_imputed$steps))</p>
+
+<p>&mdash; Now calculate the total number of steps per day with the imputed values.  <br></p>
+
+<p>total_steps_by_date_imputed &lt;- aggregate(list(total_steps = activity_imputed$steps),  by = list(date = activity_imputed$date), FUN = sum, na.rm = FALSE)  <br></p>
+
+<p>&mdash; Draw histograms showing the distribution of total steps <br>
+&mdash; (frequency and density) with the imputed values.  <br></p>
+
+<p>par(mfrow = c(1, 2))</p>
+
+<p>&mdash; frequencies</p>
+
+<p>hist(total_steps_by_date_imputed$total_steps, breaks = 30, xlab = &ldquo;Total Steps&rdquo;, main = &ldquo;Total Steps Per Day&rdquo;, col = &ldquo;lightblue&rdquo;)</p>
+
+<p>&mdash; desnsity</p>
+
+<p>plot(density(total_steps_by_date_imputed$total_steps, na.rm = TRUE), xlab = &ldquo;Total Steps&rdquo;,  ylab = &ldquo;Density&rdquo;, main = &ldquo;Total Steps Per Day&rdquo;, col = &ldquo;purple&rdquo;, lwd = 3)</p>
+
+<p>par(mfrow = c(1, 1))</p>
+
+<p>&mdash; Finally, we&#39;ll calculate the mean and median number of steps per day. <br></p>
+
+<p>mean(total_steps_by_date_imputed$total_steps)  <br>
+&mdash; [1] 10766.19  <br></p>
+
+<p>median(total_steps_by_date_imputed$total_steps)  <br>
+&mdash; [1] 10766.19  <br></p>
+
+<p>&mdash; The mean and median total number of steps are now equal to one  <br>
+&mdash; another (!!!) and higher with the imputed values. Estimates of the   <br>
+&mdash; total daily number of steps are higher with the imputed values.  <br></p>
+
+<h1>[5] Are there differences in activity patterns between</h1>
+
+<h1>weekdays and weekends?</h1>
+
+<p><br>
+<br>
+&mdash; Add a factor called weekend_indicator with two levels to the <br>
+&mdash; data set indicating whether the date is a weekday or a weekend. <br></p>
+
+<p>&mdash; first add a character column for day of the week  <br>
+<br>
+activity_imputed$weekday &lt;- weekdays(activity_imputed$date)  <br></p>
+
+<p>&mdash; now populate a new factor column using day of the week and a simple <br>
+&mdash; function  <br>
+<br></p>
+
+<p>activity_imputed$weekend_indicator &lt;- as.factor(apply(activity_imputed[&ldquo;weekday&rdquo;],  1, function(x) {
+        switch(x, Sunday = &ldquo;weekend&rdquo;, Saturday = &ldquo;weekend&rdquo;, &ldquo;weekday&rdquo;)
+    }))   <br></p>
+
+<p><br></p>
+
+<p>&mdash; confirm that we have the character and factor types we expect  <br></p>
+
+<p>str(activity_imputed)  <br>
+&mdash; &#39;data.frame&#39;:    17568 obs. of  8 variables:  <br>
+&mdash;  $ interval         : int  0 0 0 0 0 0 0 0 0 0 &hellip;  <br>
+&mdash;  $ steps            : num  1.72 0 0 0 0 &hellip;  <br>
+&mdash;  $ date             : POSIXct, format: &ldquo;2012-10-01&rdquo; &ldquo;2012-11-23&rdquo; &hellip;<br>
+&mdash;  $ time.x           : POSIXct, format: &ldquo;2014-11-22 00:00:00&rdquo; &ldquo;2014-11-22 00:00:00&rdquo; &hellip; <br>
+&mdash;  $ time.y           : POSIXct, format: &ldquo;2014-11-22 00:00:00&rdquo; &ldquo;2014-11-22 00:00:00&rdquo; &hellip; <br>
+&mdash;  $ average_steps    : num  1.72 1.72 1.72 1.72 1.72 &hellip; <br>
+<br>
+<br>
+&mdash; Now draw a panel plot using ggplot2, comparing activity patterns on <br>
+&mdash; weekdays and weekends.   <br></p>
+
+<p>average_steps_by_time_weekend &lt;- aggregate(list(average_steps = activity_imputed$steps), 
+by = list(time = activity_imputed$time.x, daytype = activity_imputed$weekend_indicator), FUN = mean )</p>
+
+<p>library(ggplot2)</p>
+
+<p>qplot(x = time, y = average_steps, geom = &ldquo;path&rdquo;, data = average_steps_by_time_weekend, 
+xlab = &ldquo;Time interval&rdquo;, ylab = &ldquo;Average steps&rdquo;, 
+main = &ldquo;Activity Patterns\nWeekdays vs. Weekends&rdquo;, 
+    facets = daytype ~ .)</p>
+
+</body>
+
+</html>
