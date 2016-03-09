@@ -65,15 +65,20 @@ options(device = function(file, width = 7, height = 7, ...) {
 })
 
 par(mfrow = c(1, 2))  # 1 row, 2 columns <br>
+png("plot1.png")
  --- frequencies   <br><br>
 hist(total_steps_by_date$total_steps, breaks = 30, xlab = "Total Steps", main = "Total Steps Per Day", col = "lightblue") <br>
 
+dev.off()
 ---  desnsity <br>
 
 plot(density(total_steps_by_date$total_steps, na.rm = TRUE), xlab = "Total Steps", ylab = "Density", main = "Total Steps Per Day", col = "purple", lwd = 3) <br>
 <br>
 
 par(mfrow = c(1, 1))  <br>
+
+dev.off()
+
 --- Finally, we'll calculate the mean and median number of steps per day.  <br>
 
 mean(total_steps_by_date$total_steps) <br>
@@ -91,10 +96,12 @@ median(total_steps_by_date$total_steps, na.rm = T) <br>
 --- series plot showing time interval on the x-axis and mean number of <br>
 --- steps for the time interval on the y-axis. <br>
 <br>
-
+png("plot3.png")
 average_steps_by_time <- aggregate(list(average_steps = activity$steps), by = list(time = activity$time,  interval = activity$interval), FUN = mean, na.rm = TRUE) <br>
 plot(average_steps ~ time, data = average_steps_by_time, xlab = "Time interval",     ylab = "Mean steps", main = "Mean Steps By Time Interval", type = "l",
-     col = "blue", lwd = 2)  <br>
+     col = "blue", lwd = 2) 
+dev.off()
+	 <br>
 <br>
 --- Next, we determine the time interval with the maximum average number <br>
 --- of steps. <br>
@@ -139,13 +146,17 @@ total_steps_by_date_imputed <- aggregate(list(total_steps = activity_imputed$ste
 par(mfrow = c(1, 2))
 
 --- frequencies
+png("plot4.png")
 
 hist(total_steps_by_date_imputed$total_steps, breaks = 30, xlab = "Total Steps", main = "Total Steps Per Day", col = "lightblue")
 
-
+dev.off()
 --- desnsity
 
+png("plot5.png")
 plot(density(total_steps_by_date_imputed$total_steps, na.rm = TRUE), xlab = "Total Steps",  ylab = "Density", main = "Total Steps Per Day", col = "purple", lwd = 3)
+
+dev.off()
 
 par(mfrow = c(1, 1))
 
@@ -204,9 +215,13 @@ by = list(time = activity_imputed$time.x, daytype = activity_imputed$weekend_ind
 
 library(ggplot2)
 
+png("plot6.png")
+
 qplot(x = time, y = average_steps, geom = "path", data = average_steps_by_time_weekend, 
 xlab = "Time interval", ylab = "Average steps", 
 main = "Activity Patterns\nWeekdays vs. Weekends", 
     facets = daytype ~ .)
+	
+dev.off()
 
 
