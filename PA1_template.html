@@ -224,16 +224,21 @@ opts_chunk$set(tidy = TRUE)</p>
 })</p>
 
 <p>par(mfrow = c(1, 2))  # 1 row, 2 columns <br>
+png(&ldquo;plot1.png&rdquo;)
  &mdash; frequencies   <br><br>
 hist(total_steps_by_date$total_steps, breaks = 30, xlab = &ldquo;Total Steps&rdquo;, main = &ldquo;Total Steps Per Day&rdquo;, col = &ldquo;lightblue&rdquo;) <br></p>
 
-<p>&mdash;  desnsity <br></p>
+<p>dev.off()
+&mdash;  desnsity <br></p>
 
 <p>plot(density(total_steps_by_date$total_steps, na.rm = TRUE), xlab = &ldquo;Total Steps&rdquo;, ylab = &ldquo;Density&rdquo;, main = &ldquo;Total Steps Per Day&rdquo;, col = &ldquo;purple&rdquo;, lwd = 3) <br>
 <br></p>
 
-<p>par(mfrow = c(1, 1))  <br>
-&mdash; Finally, we&#39;ll calculate the mean and median number of steps per day.  <br></p>
+<p>par(mfrow = c(1, 1))  <br></p>
+
+<p>dev.off()</p>
+
+<p>&mdash; Finally, we&#39;ll calculate the mean and median number of steps per day.  <br></p>
 
 <p>mean(total_steps_by_date$total_steps) <br>
 &mdash; [1] 9354.23</p>
@@ -249,11 +254,13 @@ hist(total_steps_by_date$total_steps, breaks = 30, xlab = &ldquo;Total Steps&rdq
 &mdash; of steps for each time interval. With the result, we can draw a time  <br>
 &mdash; series plot showing time interval on the x-axis and mean number of <br>
 &mdash; steps for the time interval on the y-axis. <br>
-<br></p>
-
-<p>average_steps_by_time &lt;- aggregate(list(average_steps = activity$steps), by = list(time = activity$time,  interval = activity$interval), FUN = mean, na.rm = TRUE) <br>
+<br>
+png(&ldquo;plot3.png&rdquo;)
+average_steps_by_time &lt;- aggregate(list(average_steps = activity$steps), by = list(time = activity$time,  interval = activity$interval), FUN = mean, na.rm = TRUE) <br>
 plot(average_steps ~ time, data = average_steps_by_time, xlab = &ldquo;Time interval&rdquo;,     ylab = &ldquo;Mean steps&rdquo;, main = &ldquo;Mean Steps By Time Interval&rdquo;, type = &ldquo;l&rdquo;,
-     col = &ldquo;blue&rdquo;, lwd = 2)  <br>
+     col = &ldquo;blue&rdquo;, lwd = 2) 
+dev.off()
+     <br>
 <br>
 &mdash; Next, we determine the time interval with the maximum average number <br>
 &mdash; of steps. <br>
@@ -293,13 +300,19 @@ activity_imputed &lt;- merge(activity, average_steps_by_time, by = &ldquo;interv
 
 <p>par(mfrow = c(1, 2))</p>
 
-<p>&mdash; frequencies</p>
+<p>&mdash; frequencies
+png(&ldquo;plot4.png&rdquo;)</p>
 
 <p>hist(total_steps_by_date_imputed$total_steps, breaks = 30, xlab = &ldquo;Total Steps&rdquo;, main = &ldquo;Total Steps Per Day&rdquo;, col = &ldquo;lightblue&rdquo;)</p>
 
-<p>&mdash; desnsity</p>
+<p>dev.off()
+&mdash; desnsity</p>
+
+<p>png(&ldquo;plot5.png&rdquo;)</p>
 
 <p>plot(density(total_steps_by_date_imputed$total_steps, na.rm = TRUE), xlab = &ldquo;Total Steps&rdquo;,  ylab = &ldquo;Density&rdquo;, main = &ldquo;Total Steps Per Day&rdquo;, col = &ldquo;purple&rdquo;, lwd = 3)</p>
+
+<p>dev.off()</p>
 
 <p>par(mfrow = c(1, 1))</p>
 
@@ -358,10 +371,14 @@ by = list(time = activity_imputed$time.x, daytype = activity_imputed$weekend_ind
 
 <p>library(ggplot2)</p>
 
+<p>png(&ldquo;plot6.png&rdquo;)</p>
+
 <p>qplot(x = time, y = average_steps, geom = &ldquo;path&rdquo;, data = average_steps_by_time_weekend, 
 xlab = &ldquo;Time interval&rdquo;, ylab = &ldquo;Average steps&rdquo;, 
 main = &ldquo;Activity Patterns\nWeekdays vs. Weekends&rdquo;, 
     facets = daytype ~ .)</p>
+
+<p>dev.off()</p>
 
 </body>
 
