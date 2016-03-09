@@ -154,6 +154,7 @@ dev.off()
 --- desnsity
 
 png("plot5.png")
+
 plot(density(total_steps_by_date_imputed$total_steps, na.rm = TRUE), xlab = "Total Steps",  ylab = "Density", main = "Total Steps Per Day", col = "purple", lwd = 3)
 
 dev.off()
